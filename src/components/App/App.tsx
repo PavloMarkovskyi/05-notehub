@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchNotes, createNote, deleteNote } from '../../services/noteService';
-import type { Note } from '../../types/note';
+import { Note } from '../../types/note';
 import NoteList from '../NoteList/NoteList';
 import NoteModal from '../NoteModal/NoteModal';
 import Pagination from '../Pagination/Pagination';
@@ -35,7 +35,7 @@ const App: React.FC = () => {
   const createMutation = useMutation({
     mutationFn: createNote,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notes'] });
+      queryClient.invalidateQueries(['notes']);
       setIsModalOpen(false);
     },
   });
@@ -43,7 +43,7 @@ const App: React.FC = () => {
   const deleteMutation = useMutation({
     mutationFn: deleteNote,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notes'] });
+      queryClient.invalidateQueries(['notes']);
     },
   });
 
