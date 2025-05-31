@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchNotes, createNote, deleteNote } from '../../services/noteService';
-import type { Note, NotesResponse } from '../../types/note';
+import type { Note } from '../../types/note';
 import NoteList from '../NoteList/NoteList';
 import NoteModal from '../NoteModal/NoteModal';
 import Pagination from '../Pagination/Pagination';
@@ -24,16 +24,12 @@ const App: React.FC = () => {
 
   const queryClient = useQueryClient();
 
-  const { data, isLoading, isError, error } = useQuery<
-    NotesResponse,
-    Error,
-    NotesResponse
-  >({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ['notes', page, debouncedSearchTerm],
     queryFn: () =>
       fetchNotes({ page, perPage: PER_PAGE, search: debouncedSearchTerm }),
-    keepPreviousData: true,
     staleTime: 1000 * 60 * 5,
+    placeholderData: prev => prev,
   });
 
   const createMutation = useMutation({
