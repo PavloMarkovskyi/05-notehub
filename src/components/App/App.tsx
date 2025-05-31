@@ -24,11 +24,14 @@ const App: React.FC = () => {
 
   const queryClient = useQueryClient();
 
-  const { data, isLoading, isError, error } = useQuery<NotesResponse>({
+  const { data, isLoading, isError, error } = useQuery<
+    NotesResponse,
+    Error,
+    NotesResponse
+  >({
     queryKey: ['notes', page, debouncedSearchTerm],
     queryFn: () =>
       fetchNotes({ page, perPage: PER_PAGE, search: debouncedSearchTerm }),
-    enabled: debouncedSearchTerm !== undefined,
     keepPreviousData: true,
     staleTime: 1000 * 60 * 5,
   });
