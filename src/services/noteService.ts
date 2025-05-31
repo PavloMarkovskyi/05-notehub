@@ -1,47 +1,53 @@
-import axios, { type AxiosResponse } from 'axios';
-import type { Note, NotesResponse, NewNotePayload } from '../types/note';
+import axios from 'axios';
+import type { Note } from '../types/note';
 
-const API_URL = 'https://notehub-public.goit.study/api/notes';
+const BASE_URL = 'https://notehub-public.goit.study/api';
 const token = import.meta.env.VITE_NOTEHUB_TOKEN;
 
-const axiosInstance = axios.create({ baseURL: API_URL });
-
-axiosInstance.interceptors.request.use((config) => {
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  } else {
-    console.error('VITE_NOTEHUB_TOKEN is not defined');
-  }
-  return config;
-});
-
 interface FetchNotesParams {
-  page?: number;
-  perPage?: number;
+  page: number;
+  perPage: number;
   search?: string;
 }
 
-export const fetchNotes = async ({
-  page = 1,
-  perPage = 12,
-  search = '',
-}: FetchNotesParams): Promise<NotesResponse> => {
-  const params: Record<string, string | number | undefined> = {
-    page,
-    perPage,
-    search: search || undefined,
-  };
+export const fetchNotes = async ({ page, perPage, search }: FetchNotesParams) => {
+  const params = new URLSearchParams();
 
-  const { data }: AxiosResponse<NotesResponse> = await axiosInstance.get('/', { params });
-  return data;
+  params.append('page', String(page));
+  params.append('perPage', String(perPage));
+
+  if (search?.trim()) {
+    params.append('search', search.trim());
+  }
+
+  const response = await axios.get(`${BASE_URL}/notes?${params.toString()}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data;
 };
 
-export const createNote = async (note: NewNotePayload): Promise<Note> => {
-  const { data }: AxiosResponse<Note> = await axiosInstance.post('/', note);
-  return data;
+
+export const createNote = async (note: {
+  title: string;
+  content?: string;
+  tag: Note['tag'];
+}) => {
+  const response = await axios.post(`${BASE_URL}/notes`, note, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
 };
 
-export const deleteNote = async (id: number): Promise<Note> => {
-  const { data }: AxiosResponse<Note> = await axiosInstance.delete(`/${id}`);
-  return data;
+export const deleteNote = async (id: number) => {
+  const response = await axios.delete(`${BASE_URL}/notes/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
 };

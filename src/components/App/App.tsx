@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchNotes, createNote, deleteNote } from '../../services/noteService';
 import type { Note } from '../../types/note';
@@ -11,16 +11,12 @@ import { useDebounce } from 'use-debounce';
 
 const PER_PAGE = 12;
 
-const App: React.FC = () => {
+const App = () => {
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
-
-  useEffect(() => {
-    setPage(1);
-  }, [debouncedSearchTerm]);
 
   const queryClient = useQueryClient();
 
@@ -61,17 +57,22 @@ const App: React.FC = () => {
     }
   };
 
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    setPage(1);
+  };
+
   const totalPages = data?.totalPages || 1;
 
   return (
     <div className={css.app}>
       <header className={css.toolbar}>
-        <SearchBox value={searchTerm} onChange={setSearchTerm} />
+        <SearchBox value={searchTerm} onChange={handleSearchChange} />
         {totalPages > 1 && (
           <Pagination
             pageCount={totalPages}
             currentPage={page}
-            onPageChange={setPage}
+            onPageChange={(selectedPage: number) => setPage(selectedPage)}
           />
         )}
         <button className={css.button} onClick={() => setIsModalOpen(true)}>
