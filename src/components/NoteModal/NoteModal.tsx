@@ -2,14 +2,11 @@ import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import NoteForm from '../NoteForm/NoteForm';
 import css from './NoteModal.module.css';
+import type { NewNotePayload } from '../../types/note';
 
 interface NoteModalProps {
   onClose: () => void;
-  onCreateNote: (note: {
-    title: string;
-    content?: string;
-    tag: string;
-  }) => void;
+  onCreateNote: (note: NewNotePayload) => void;
 }
 
 const modalRoot = document.getElementById('modal-root') || document.body;

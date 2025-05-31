@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchNotes, createNote, deleteNote } from '../../services/noteService';
-import { Note } from '../../types/note';
+import type { Note, NotesResponse } from '../../types/note';
 import NoteList from '../NoteList/NoteList';
 import NoteModal from '../NoteModal/NoteModal';
 import Pagination from '../Pagination/Pagination';
@@ -24,7 +24,7 @@ const App: React.FC = () => {
 
   const queryClient = useQueryClient();
 
-  const { data, isLoading, isError, error } = useQuery({
+  const { data, isLoading, isError, error } = useQuery<NotesResponse>({
     queryKey: ['notes', page, debouncedSearchTerm],
     queryFn: () =>
       fetchNotes({ page, perPage: PER_PAGE, search: debouncedSearchTerm }),
@@ -35,7 +35,7 @@ const App: React.FC = () => {
   const createMutation = useMutation({
     mutationFn: createNote,
     onSuccess: () => {
-      queryClient.invalidateQueries(['notes']);
+      queryClient.invalidateQueries({ queryKey: ['notes'] });
       setIsModalOpen(false);
     },
   });
@@ -43,7 +43,7 @@ const App: React.FC = () => {
   const deleteMutation = useMutation({
     mutationFn: deleteNote,
     onSuccess: () => {
-      queryClient.invalidateQueries(['notes']);
+      queryClient.invalidateQueries({ queryKey: ['notes'] });
     },
   });
 

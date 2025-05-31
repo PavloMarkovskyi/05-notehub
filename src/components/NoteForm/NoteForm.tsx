@@ -2,20 +2,17 @@ import React from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import css from './NoteForm.module.css';
+import type { NoteTag, NewNotePayload } from '../../types/note';
 
 interface NoteFormProps {
   onClose: () => void;
-  onCreateNote: (note: {
-    title: string;
-    content?: string;
-    tag: string;
-  }) => void;
+  onCreateNote: (note: NewNotePayload) => void;
 }
 
 interface FormValues {
   title: string;
   content: string;
-  tag: string;
+  tag: NoteTag;
 }
 
 const NoteForm: React.FC<NoteFormProps> = ({ onClose, onCreateNote }) => {
@@ -25,8 +22,8 @@ const NoteForm: React.FC<NoteFormProps> = ({ onClose, onCreateNote }) => {
       .max(50, 'Max 50 characters')
       .required('Required'),
     content: Yup.string().max(500, 'Max 500 characters'),
-    tag: Yup.string()
-      .oneOf(['Todo', 'Work', 'Personal', 'Meeting', 'Shopping'], 'Invalid tag')
+    tag: Yup.mixed<NoteTag>()
+      .oneOf(['Todo', 'Work', 'Personal', 'Meeting', 'Shopping'])
       .required('Required'),
   });
 
