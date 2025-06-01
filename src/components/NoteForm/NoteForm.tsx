@@ -1,5 +1,5 @@
 import React from 'react';
-import { useFormik } from 'formik';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createNote } from '../../services/noteService';
@@ -8,7 +8,7 @@ import css from './NoteForm.module.css';
 
 interface NoteFormProps {
   onClose: () => void;
-  onCreateNote: (note: NewNotePayload) => void;
+  onCreateNote?: (note: NewNotePayload) => void;
 }
 
 interface FormValues {
@@ -42,87 +42,81 @@ const NoteForm: React.FC<NoteFormProps> = ({ onClose }) => {
       .required('Required'),
   });
 
-  const formik = useFormik<FormValues>({
-    initialValues: {
-      title: '',
-      content: '',
-      tag: 'Todo',
-    },
-    validationSchema,
-    onSubmit: values => {
-      mutate({
-        title: values.title,
-        content: values.content.trim() === '' ? undefined : values.content,
-        tag: values.tag,
-      });
-    },
-  });
+  const initialValues: FormValues = {
+    title: '',
+    content: '',
+    tag: 'Todo',
+  };
 
   return (
-    <form className={css.form} onSubmit={formik.handleSubmit} noValidate>
-      <div className={css.formGroup}>
-        <label htmlFor="title">Title</label>
-        <input
-          id="title"
-          name="title"
-          type="text"
-          className={css.input}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          value={formik.values.title}
-          autoFocus
-        />
-        {formik.touched.title && formik.errors.title && (
-          <div className={css.error}>{formik.errors.title}</div>
-        )}
-      </div>
+    <Formik
+      initialValues={initialValues}
+      validationSchema={validationSchema}
+      onSubmit={values => {
+        mutate({
+          title: values.title,
+          content: values.content.trim() === '' ? undefined : values.content,
+          tag: values.tag,
+        });
+      }}
+    >
+      <Form className={css.form} noValidate>
+        <div className={css.formGroup}>
+          <label htmlFor="title">Title</label>
+          <Field
+            id="title"
+            name="title"
+            type="text"
+            className={css.input}
+            autoFocus
+          />
+          <ErrorMessage name="title">
+            {msg => <div className={css.error}>{msg}</div>}
+          </ErrorMessage>
+        </div>
 
-      <div className={css.formGroup}>
-        <label htmlFor="content">Content</label>
-        <textarea
-          id="content"
-          name="content"
-          className={css.textarea}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          value={formik.values.content}
-          rows={4}
-        />
-        {formik.touched.content && formik.errors.content && (
-          <div className={css.error}>{formik.errors.content}</div>
-        )}
-      </div>
+        <div className={css.formGroup}>
+          <label htmlFor="content">Content</label>
+          <Field
+            as="textarea"
+            id="content"
+            name="content"
+            className={css.textarea}
+            rows={4}
+          />
+          <ErrorMessage name="content">
+            {msg => <div className={css.error}>{msg}</div>}
+          </ErrorMessage>
+        </div>
 
-      <div className={css.formGroup}>
-        <label htmlFor="tag">Tag</label>
-        <select
-          id="tag"
-          name="tag"
-          className={css.select}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          value={formik.values.tag}
-        >
-          <option value="Todo">Todo</option>
-          <option value="Work">Work</option>
-          <option value="Personal">Personal</option>
-          <option value="Meeting">Meeting</option>
-          <option value="Shopping">Shopping</option>
-        </select>
-        {formik.touched.tag && formik.errors.tag && (
-          <div className={css.error}>{formik.errors.tag}</div>
-        )}
-      </div>
+        <div className={css.formGroup}>
+          <label htmlFor="tag">Tag</label>
+          <Field as="select" id="tag" name="tag" className={css.select}>
+            <option value="Todo">Todo</option>
+            <option value="Work">Work</option>
+            <option value="Personal">Personal</option>
+            <option value="Meeting">Meeting</option>
+            <option value="Shopping">Shopping</option>
+          </Field>
+          <ErrorMessage name="tag">
+            {msg => <div className={css.error}>{msg}</div>}
+          </ErrorMessage>
+        </div>
 
-      <div className={css.buttons}>
-        <button type="submit" className={css.submitButton} disabled={isPending}>
-          Create
-        </button>
-        <button type="button" className={css.cancelButton} onClick={onClose}>
-          Cancel
-        </button>
-      </div>
-    </form>
+        <div className={css.buttons}>
+          <button
+            type="submit"
+            className={css.submitButton}
+            disabled={isPending}
+          >
+            Create
+          </button>
+          <button type="button" className={css.cancelButton} onClick={onClose}>
+            Cancel
+          </button>
+        </div>
+      </Form>
+    </Formik>
   );
 };
 

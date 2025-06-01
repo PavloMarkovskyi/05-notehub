@@ -1,5 +1,10 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  keepPreviousData,
+} from '@tanstack/react-query';
 import { fetchNotes, createNote, deleteNote } from '../../services/noteService';
 import type { Note } from '../../types/note';
 import NoteList from '../NoteList/NoteList';
@@ -21,11 +26,11 @@ const App = () => {
   const queryClient = useQueryClient();
 
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ['notes', page, debouncedSearchTerm],
+    queryKey: ['notes', debouncedSearchTerm, page],
     queryFn: () =>
       fetchNotes({ page, perPage: PER_PAGE, search: debouncedSearchTerm }),
     staleTime: 1000 * 60 * 5,
-    placeholderData: prev => prev,
+    placeholderData: keepPreviousData,
   });
 
   const createMutation = useMutation({
