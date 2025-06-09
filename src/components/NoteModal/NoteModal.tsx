@@ -9,9 +9,9 @@ interface NoteModalProps {
   onCreateNote: (note: NewNotePayload) => void;
 }
 
-const modalRoot = document.getElementById('modal-root') || document.body;
+const modalRoot = document.getElementById('modal-root')!;
 
-const NoteModal: React.FC<NoteModalProps> = ({ onClose, onCreateNote }) => {
+const NoteModal = ({ onClose, onCreateNote }: NoteModalProps) => {
   useEffect(() => {
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -36,9 +36,13 @@ const NoteModal: React.FC<NoteModalProps> = ({ onClose, onCreateNote }) => {
       className={css.backdrop}
       role="dialog"
       aria-modal="true"
+      aria-labelledby="modal-title"
       onClick={onBackdropClick}
     >
       <div className={css.modal}>
+        <h2 id="modal-title" className="visually-hidden">
+          Create Note
+        </h2>
         <NoteForm onClose={onClose} onCreateNote={onCreateNote} />
       </div>
     </div>,

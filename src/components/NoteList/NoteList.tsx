@@ -1,4 +1,3 @@
-import React from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { deleteNote } from '../../services/noteService';
 import type { Note } from '../../types/note';
@@ -9,10 +8,14 @@ interface NoteListProps {
   onDeleteNote: (id: number) => void;
 }
 
-const NoteList: React.FC<NoteListProps> = ({ notes }) => {
+const NoteList = ({ notes }: NoteListProps) => {
   const queryClient = useQueryClient();
 
-  const { mutate: deleteMutation } = useMutation({
+  const {
+    mutate: deleteMutation,
+    isPending,
+    variables,
+  } = useMutation({
     mutationFn: (id: number) => deleteNote(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notes'] });
@@ -35,8 +38,9 @@ const NoteList: React.FC<NoteListProps> = ({ notes }) => {
             <button
               className={css.button}
               onClick={() => deleteMutation(note.id)}
+              disabled={isPending && variables === note.id}
             >
-              Delete
+              {isPending && variables === note.id ? 'Deleting...' : 'Delete'}
             </button>
           </div>
         </li>

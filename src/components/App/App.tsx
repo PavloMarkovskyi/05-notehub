@@ -14,7 +14,7 @@ import SearchBox from '../SearchBox/SearchBox';
 import css from './App.module.css';
 import { useDebounce } from 'use-debounce';
 
-const PER_PAGE = 12;
+const PER_PAGE = Number(import.meta.env.VITE_NOTES_PER_PAGE) || 12;
 
 const App = () => {
   const [page, setPage] = useState(1);
@@ -90,6 +90,9 @@ const App = () => {
 
       {data && data.notes.length > 0 && (
         <NoteList notes={data.notes} onDeleteNote={handleDeleteNote} />
+      )}
+      {data && data.notes.length === 0 && (
+        <p className={css.empty}>No notes found. Try adjusting your search.</p>
       )}
 
       {isModalOpen && (

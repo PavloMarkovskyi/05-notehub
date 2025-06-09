@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactPaginate from 'react-paginate';
 import css from './Pagination.module.css';
 
@@ -8,11 +7,11 @@ interface PaginationProps {
   onPageChange: (page: number) => void;
 }
 
-const Pagination: React.FC<PaginationProps> = ({
+const Pagination = ({
   pageCount,
   currentPage,
   onPageChange,
-}) => {
+}: PaginationProps) => {
   if (pageCount <= 1) return null;
 
   const handlePageChange = (selectedItem: { selected: number }) => {

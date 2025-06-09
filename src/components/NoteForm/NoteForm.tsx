@@ -1,4 +1,3 @@
-import React from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -17,7 +16,7 @@ interface FormValues {
   tag: NoteTag;
 }
 
-const NoteForm: React.FC<NoteFormProps> = ({ onClose }) => {
+const NoteForm = ({ onClose }: NoteFormProps) => {
   const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
@@ -111,7 +110,12 @@ const NoteForm: React.FC<NoteFormProps> = ({ onClose }) => {
           >
             Create
           </button>
-          <button type="button" className={css.cancelButton} onClick={onClose}>
+          <button
+            type="button"
+            className={css.cancelButton}
+            onClick={onClose}
+            disabled={isPending}
+          >
             Cancel
           </button>
         </div>
